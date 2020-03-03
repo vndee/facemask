@@ -13,7 +13,7 @@ from core.detector.loader import load_pytorch_model, pytorch_inference
 logger = get_logger('Face Mask Detector')
 
 
-class FaceMaskDetector:
+class FaceMaskDetector(object):
     def __init__(self,
                  model_path=AppConf.detector_model_path,
                  conf_thresh=AppConf.detector_conf_thresh,
