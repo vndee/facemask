@@ -10,7 +10,7 @@ from utils.anchor_decode import decode_bbox
 from utils.nms import single_class_non_max_suppression
 from core.detector.loader import load_pytorch_model, pytorch_inference
 
-model = load_pytorch_model('models/face_mask_detection.pth');
+model = load_pytorch_model('models/model.vndee');
 
 # anchor configuration
 feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
