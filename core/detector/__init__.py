@@ -10,7 +10,7 @@ from utils.anchor_decode import decode_bbox
 from utils.nms import single_class_non_max_suppression
 from core.detector.loader import load_pytorch_model, pytorch_inference
 
-model = load_pytorch_model('models/model.vndee');
+model = load_pytorch_model('static/model.vndee');
 
 # anchor configuration
 feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
@@ -133,7 +133,7 @@ def run_on_video(video_path, output_video_name, conf_thresh):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Face Mask Detection")
-    parser.add_argument('--img-mode', type=int, default=1, help='set 1 to run on image, 0 to run on video.')
+    parser.add_argument('--img-mode', type=int, default=0, help='set 1 to run on image, 0 to run on video.')
     parser.add_argument('--img-path', type=str, help='path to your image.')
     parser.add_argument('--video-path', type=str, default='0', help='path to your video, `0` means to use camera.')
     # parser.add_argument('--hdf5', type=str, help='keras hdf5 file')
