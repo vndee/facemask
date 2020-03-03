@@ -11,6 +11,7 @@ def get_devenv():
     conf['detector_target_shape'] = os.environ.get('DETECTOR_TARGET_SHAPE', (260, 260))
     conf['detector_draw_result'] = os.environ.get('DETECTOR_DRAW_RESULT', True)
     conf['detector_show_result'] = os.environ.get('DETECTOR_SHOW_RESULT', True)
+    conf['detector_device'] = os.environ.get('DETECTOR_DEVICE', 'cuda')
 
     return conf
 

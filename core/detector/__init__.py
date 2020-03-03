@@ -20,7 +20,8 @@ class FaceMaskDetector:
                  iou_thresh=AppConf.detector_iou_thresh,
                  target_shape=AppConf.detector_target_shape,
                  draw_result=AppConf.detector_draw_result,
-                 show_result=AppConf.detector_show_result):
+                 show_result=AppConf.detector_show_result,
+                 device=AppConf.detector_device):
         '''
         Main class for face mask detection inference
         :param model_path: Path to model weight
@@ -31,7 +32,7 @@ class FaceMaskDetector:
         :param show_result: whether to display to image
         '''
 
-        self.model = load_pytorch_model(model_path)
+        self.model = load_pytorch_model(model_path).to(device)
         self.feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
         self.anchor_sizes = [[0.04, 0.056], [0.08, 0.11], [0.16, 0.22], [0.32, 0.45], [0.64, 0.72]]
         self.anchor_ratios = [[1, 0.62, 0.42]] * 5
@@ -44,6 +45,7 @@ class FaceMaskDetector:
         self.target_shape = target_shape
         self.draw_result = draw_result
         self.show_result = show_result
+        self.device = device
 
     def infer(self, image):
         '''
@@ -58,8 +60,11 @@ class FaceMaskDetector:
         _image = np.expand_dims(_image, axis=0)
         _image = _image.transpose((0, 3, 1, 2))
 
-        y_bboxes_output, y_cls_output, = self.model.forward(torch.tensor(_image).float())
-        y_bboxes_output, y_cls_output = y_bboxes_output.detach().numpy(), y_cls_output.detach().numpy()
+        y_bboxes_output, y_cls_output, = self.model.forward(torch.tensor(_image).float().to(self.device))
+        if self.device == 'cuda':
+            y_bboxes_output, y_cls_output = y_bboxes_output.cpu().detach().numpy(), y_cls_output.cpu().detach().numpy()
+        else:
+            y_bboxes_output, y_cls_output = y_bboxes_output.detach().numpy(), y_cls_output.detach().numpy()
 
         # remove the batch dimension, for batch is always 1 for inference
         y_bboxes = decode_bbox(self.anchor_exp, y_bboxes_output)[0]
