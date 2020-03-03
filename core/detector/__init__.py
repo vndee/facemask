@@ -60,11 +60,13 @@ class FaceMaskDetector:
         _image = np.expand_dims(_image, axis=0)
         _image = _image.transpose((0, 3, 1, 2))
 
-        y_bboxes_output, y_cls_output, = self.model.forward(torch.tensor(_image).float().to(self.device))
-        if self.device == 'cuda':
-            y_bboxes_output, y_cls_output = y_bboxes_output.cpu().detach().numpy(), y_cls_output.cpu().detach().numpy()
-        else:
-            y_bboxes_output, y_cls_output = y_bboxes_output.detach().numpy(), y_cls_output.detach().numpy()
+        with torch.no_grad():
+            y_bboxes_output, y_cls_output, = self.model.forward(torch.tensor(_image).float().to(self.device))
+            if self.device == 'cuda':
+                y_bboxes_output, y_cls_output = y_bboxes_output.cpu().detach().numpy(), y_cls_output.cpu().detach().numpy()
+                torch.cuda.empty_cache()
+            else:
+                y_bboxes_output, y_cls_output = y_bboxes_output.detach().numpy(), y_cls_output.detach().numpy()
 
         # remove the batch dimension, for batch is always 1 for inference
         y_bboxes = decode_bbox(self.anchor_exp, y_bboxes_output)[0]
