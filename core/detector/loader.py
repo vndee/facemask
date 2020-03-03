@@ -2,7 +2,7 @@ import torch
 
 
 def load_pytorch_model(model_path):
-    model = torch.load(model_path)
+    model = torch.load(model_path).eval()
     return model
 
 

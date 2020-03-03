@@ -10,7 +10,7 @@ from utils.anchor_decode import decode_bbox
 from utils.nms import single_class_non_max_suppression
 from core.detector.loader import load_pytorch_model, pytorch_inference
 
-logger = get_logger(__name__)
+logger = get_logger('Face Mask Detector')
 
 
 class FaceMaskDetector:
@@ -87,7 +87,7 @@ class FaceMaskDetector:
                 else:
                     color = (255, 0, 0)
                 cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
-                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 2, ymin - 2), cv2.FONT_HERSHEY_SIMPLEXq, 0.8, color)
+                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 2, ymin - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
 
             answers.append([class_id, conf, xmin, ymin, xmax])
 
@@ -95,9 +95,6 @@ class FaceMaskDetector:
 
     def video_stream(self, video_url, video_name):
         video_capture = cv2.VideoCapture(video_url)
-        height, width = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT), video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)
-        fps = video_capture.get(cv2.CAP_PROP_FPS)
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
         total_frames = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
 
         assert video_capture.isOpened(), 'Video open failed'

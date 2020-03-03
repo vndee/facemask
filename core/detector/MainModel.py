@@ -122,7 +122,7 @@ class KitModel(nn.Module):
         conv2d_5        = self.conv2d_5(conv2d_5_pad)
         cls_1_insert_conv2d_bn = self.cls_1_insert_conv2d_bn(cls_1_insert_conv2d)
         loc_1_insert_conv2d_bn = self.loc_1_insert_conv2d_bn(loc_1_insert_conv2d)
-        cls_0_activation = F.sigmoid(cls_0_reshape)
+        cls_0_activation = torch.sigmoid(cls_0_reshape)
         conv2d_5_bn     = self.conv2d_5_bn(conv2d_5)
         cls_1_insert_conv2d_activation = F.relu(cls_1_insert_conv2d_bn)
         loc_1_insert_conv2d_activation = F.relu(loc_1_insert_conv2d_bn)
