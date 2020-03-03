@@ -116,6 +116,9 @@ class FaceMaskDetector:
                 write_frame_stamp = time.time()
                 idx = idx + 1
 
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
                 logger.info(f'[{idx}/{total_frames}] - read frame: {read_frame_stamp - start_stamp}, infer time: {inference_stamp - read_frame_stamp}, write time: {write_frame_stamp - inference_stamp}')
 
         video_capture.release()
