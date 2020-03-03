@@ -2,9 +2,9 @@
 import cv2
 import time
 import torch
-import argparse
 import numpy as np
 from common.logger import get_logger
+from common.config import AppConf
 from utils.anchor_generator import generate_anchors
 from utils.anchor_decode import decode_bbox
 from utils.nms import single_class_non_max_suppression
@@ -14,7 +14,13 @@ logger = get_logger(__name__)
 
 
 class FaceMaskDetector:
-    def __init__(self, model_path, conf_thresh, iou_thresh, target_shape, draw_result, show_result):
+    def __init__(self,
+                 model_path=AppConf.detector_model_path,
+                 conf_thresh=AppConf.detector_conf_thresh,
+                 iou_thresh=AppConf.detector_iou_thresh,
+                 target_shape=AppConf.detector_target_shape,
+                 draw_result=AppConf.detector_draw_result,
+                 show_result=AppConf.detector_show_result):
         '''
         Main class for face mask detection inference
         :param model_path: Path to model weight
@@ -47,10 +53,12 @@ class FaceMaskDetector:
         '''
         answers = []
         height, width, channel = image.shape
-        _image = cv2.resize(image, self.target_shape) / 255.0
-        _image = np.expand_dims(_image, axis=0).transpose((0, 3, 1, 2))
+        _image = cv2.resize(image, self.target_shape)
+        _image = _image / 255.0
+        _image = np.expand_dims(_image, axis=0)
+        _image = _image.transpose((0, 3, 1, 2))
 
-        y_bboxes_output, y_cls_output = self.model.forward(torch.tensor(_image).float())
+        y_bboxes_output, y_cls_output, = self.model.forward(torch.tensor(_image).float())
         y_bboxes_output, y_cls_output = y_bboxes_output.detach().numpy(), y_cls_output.detach().numpy()
 
         # remove the batch dimension, for batch is always 1 for inference
@@ -66,7 +74,7 @@ class FaceMaskDetector:
 
         for idx in keep_idxs:
             conf = float(bbox_max_scores[idx])
-            class_id = bbox_max_scores[idx]
+            class_id = bbox_max_score_classes[idx]
             bbox = y_bboxes[idx]
 
             # clip the coordinate, avoid the value exceed the image boundary
@@ -87,7 +95,7 @@ class FaceMaskDetector:
 
     def video_stream(self, video_url, video_name):
         video_capture = cv2.VideoCapture(video_url)
-        height, width = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
+        height, width = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT), video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)
         fps = video_capture.get(cv2.CAP_PROP_FPS)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         total_frames = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
