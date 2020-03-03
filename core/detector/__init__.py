@@ -101,6 +101,12 @@ class FaceMaskDetector:
         return answers, image
 
     def video_stream(self, video_url, video_name):
+        '''
+        Video processing
+        :param video_url: video url
+        :param video_name: video window name
+        :return:
+        '''
         video_capture = cv2.VideoCapture(video_url)
         total_frames = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
 
