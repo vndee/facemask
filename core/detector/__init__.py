@@ -75,7 +75,8 @@ class FaceMaskDetector:
         bbox_max_score_classes = np.argmax(y_cls, axis=1)
 
         # keep_idx is the alive bounding box after nms
-        keep_idxs = single_class_non_max_suppression(y_bboxes, bbox_max_scores, conf_thresh=self.conf_thresh, iou_thresh=self.iou_thresh)
+        keep_idxs = single_class_non_max_suppression(y_bboxes, bbox_max_scores, conf_thresh=self.conf_thresh,
+                                                     iou_thresh=self.iou_thresh)
 
         for idx in keep_idxs:
             conf = float(bbox_max_scores[idx])
@@ -92,7 +93,8 @@ class FaceMaskDetector:
                 else:
                     color = (255, 0, 0)
                 cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
-                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 4, ymin - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color)
+                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 4, ymin - 4),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color)
 
             answers.append([class_id, conf, xmin, ymin, xmax])
 
@@ -133,8 +135,3 @@ class FaceMaskDetector:
 
         video_capture.release()
         cv2.destroyAllWindows()
-
-
-if __name__ == '__main__':
-    face_mask_detector = FaceMaskDetector()
-    face_mask_detector.video_stream(0, 'Face Mask Detector')
