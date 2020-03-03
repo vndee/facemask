@@ -87,7 +87,7 @@ class FaceMaskDetector:
                 else:
                     color = (255, 0, 0)
                 cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
-                cv2.putText(image, f'{self.id2class[class_id]}: {conf}', (xmin + 2, ymin - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
+                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 2, ymin - 2), cv2.FONT_HERSHEY_SIMPLEXq, 0.8, color)
 
             answers.append([class_id, conf, xmin, ymin, xmax])
 
@@ -111,7 +111,7 @@ class FaceMaskDetector:
 
             if status is True:
                 bboxes, frame = self.infer(frame_raw)
-                cv2.imshow(video_name, frame[:, :, :: -1])
+                cv2.imshow(video_name, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                 inference_stamp = time.time()
                 write_frame_stamp = time.time()
                 idx = idx + 1
