@@ -92,7 +92,7 @@ class FaceMaskDetector:
                 else:
                     color = (255, 0, 0)
                 cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
-                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 2, ymin - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
+                cv2.putText(image, '%s: %.2f' % (self.id2class[class_id], conf), (xmin + 4, ymin - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color)
 
             answers.append([class_id, conf, xmin, ymin, xmax])
 
@@ -101,6 +101,9 @@ class FaceMaskDetector:
     def video_stream(self, video_url, video_name):
         video_capture = cv2.VideoCapture(video_url)
         total_frames = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
+
+        if total_frames == -1.0:
+            total_frames = 'INF'
 
         assert video_capture.isOpened(), 'Video open failed'
         status, idx = True, 0
@@ -113,15 +116,20 @@ class FaceMaskDetector:
 
             if status is True:
                 bboxes, frame = self.infer(frame_raw)
-                cv2.imshow(video_name, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                 inference_stamp = time.time()
-                write_frame_stamp = time.time()
+                fps = 1.0 / (0.0002 + (inference_stamp - start_stamp))
+                cv2.putText(frame, f'FPS: {round(fps, 2)}', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
+                cv2.imshow(video_name, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                 idx = idx + 1
+                write_frame_stamp = time.time()
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-                logger.info(f'[{idx}/{total_frames}] - read frame: {read_frame_stamp - start_stamp}, infer time: {inference_stamp - read_frame_stamp}, write time: {write_frame_stamp - inference_stamp}')
+                logger.info(f'[{idx}/{total_frames}] - FPS: {round(fps, 2)} '
+                            f'read frame: {round(read_frame_stamp - start_stamp, 4)},'
+                            f' infer time: {round(inference_stamp - read_frame_stamp, 4)},'
+                            f' write time: {round(write_frame_stamp - inference_stamp, 4)}')
 
         video_capture.release()
         cv2.destroyAllWindows()
