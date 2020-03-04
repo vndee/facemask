@@ -7,12 +7,12 @@ __weights_dict = dict()
 
 
 def load_weights(weight_file):
-    if weight_file == None:
+    if weight_file is None:
         return
 
     try:
         weights_dict = np.load(weight_file).item()
-    except:
+    except Exception as ex:
         weights_dict = np.load(weight_file, encoding='bytes').item()
 
     return weights_dict
@@ -192,13 +192,16 @@ class KitModel(nn.Module):
         cls_branch_concat = torch.cat((cls_0_activation, cls_1_activation, cls_2_activation, cls_3_activation, cls_4_activation), 1)
         return loc_branch_concat, cls_branch_concat
 
-
     @staticmethod
     def __batch_normalization(dim, name, **kwargs):
-        if   dim == 0 or dim == 1:  layer = nn.BatchNorm1d(**kwargs)
-        elif dim == 2:  layer = nn.BatchNorm2d(**kwargs)
-        elif dim == 3:  layer = nn.BatchNorm3d(**kwargs)
-        else:           raise NotImplementedError()
+        if dim == 0 or dim == 1:
+            layer = nn.BatchNorm1d(**kwargs)
+        elif dim == 2:
+            layer = nn.BatchNorm2d(**kwargs)
+        elif dim == 3:
+            layer = nn.BatchNorm3d(**kwargs)
+        else:
+            raise NotImplementedError()
 
         if 'scale' in __weights_dict[name]:
             layer.state_dict()['weight'].copy_(torch.from_numpy(__weights_dict[name]['scale']))
@@ -216,10 +219,14 @@ class KitModel(nn.Module):
 
     @staticmethod
     def __conv(dim, name, **kwargs):
-        if   dim == 1:  layer = nn.Conv1d(**kwargs)
-        elif dim == 2:  layer = nn.Conv2d(**kwargs)
-        elif dim == 3:  layer = nn.Conv3d(**kwargs)
-        else:           raise NotImplementedError()
+        if dim == 1:
+            layer = nn.Conv1d(**kwargs)
+        elif dim == 2:
+            layer = nn.Conv2d(**kwargs)
+        elif dim == 3:
+            layer = nn.Conv3d(**kwargs)
+        else:
+            raise NotImplementedError()
 
         layer.state_dict()['weight'].copy_(torch.from_numpy(__weights_dict[name]['weights']))
         if 'bias' in __weights_dict[name]:
