@@ -1,4 +1,4 @@
-## Face Mask Detection
+## FaceMask
 
 This project has been built on top of [AIZooTech - FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection/)
 
